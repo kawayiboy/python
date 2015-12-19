@@ -178,8 +178,18 @@ def read_utf8_file(filename):
     except Exception, e:
         raise e
 
+def read_file_content_lines(filename):
+    lines = []
+    try:
+        with open (filename, "r") as myfile:
+            for line in myfile:
+                lines.append(line)
+        return lines
+    except Exception, e:
+        raise e
+
 def write_utf8_file(filename,content,append=False):
-    myfile = codecs.open(filename,"a","utf-8")
+    myfile = codecs.open(filename,"w","utf-8")
     if(append):
         myfile = codecs.open(filename,"a","utf-8")
     myfile.write(content)
