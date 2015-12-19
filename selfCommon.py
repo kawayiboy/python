@@ -190,7 +190,7 @@ def read_file_content_lines(filename):
 
 def write_utf8_file(filename,content,append=False):
     myfile = codecs.open(filename,"w","utf-8")
-    if(append):
+    if(append==True):
         myfile = codecs.open(filename,"a","utf-8")
     myfile.write(content)
     myfile.close()
