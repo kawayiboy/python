@@ -383,3 +383,12 @@ def exec_cmd(cmd):
             return (outs, errs)
     except Exception, e:
         raise e
+
+def dump_dict_to_json_file(filename, content):
+    with open(filename, 'w') as fp:
+        json.dump(content, fp)
+
+def load_json(filename):
+    content = read_file_content(filename)
+    json_map = json.loads(str(content))
+    return json_map
