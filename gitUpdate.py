@@ -3,6 +3,7 @@ import subprocess
 import selfCommon
 
 update_to_date_msg = "Your branch is behind 'origin/master' by"
+outs, errs = selfCommon.exec_cmd("git fetch --all")
 outs, errs = selfCommon.exec_cmd("git commit")
 if(outs):
 	# print outs
@@ -11,5 +12,6 @@ if(outs):
 		update_input = raw_input("update(y/n): ")
 		if(update_input.lower()=='y'):
 			print "updating"
+			outs, errs = selfCommon.exec_cmd("git reset --hard origin/master")
 	else:
 		print "no update"
