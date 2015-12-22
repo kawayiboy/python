@@ -1,15 +1,15 @@
 from subprocess import Popen, PIPE
 import subprocess
+import selfCommon
 
 update_to_date_msg = "Your branch is behind 'origin/master' by"
-p = Popen("git commit", shell=True, stdout=PIPE, stderr=PIPE)
-outs, errs = p.communicate()
-if p.returncode != 0 and errs and errs!="":
-	print p.returncode
-	print errs
-else:
+outs, errs = selfCommon.exec_cmd("git commit")
+if(outs):
 	# print outs
 	if(update_to_date_msg in outs):
 		print "need update"
+		update_input = raw_input("update(y/n): ")
+		if(update_input.lower()=='y'):
+			print "updating"
 	else:
 		print "no update"

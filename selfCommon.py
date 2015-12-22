@@ -18,6 +18,8 @@ import time
 from stat import *
 import requests
 import codecs
+from subprocess import Popen, PIPE
+import subprocess
 
 def get_tomorrow():
     today = datetime.now()
@@ -369,3 +371,15 @@ def dumpclean(obj):
                 print v
     else:
         print obj
+
+def exec_cmd(cmd):
+    try:
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        outs, errs = p.communicate()
+        if p.returncode != 0 and errs and errs!="":
+            print p.returncode
+            print errs
+        else:
+            return (outs, errs)
+    except Exception, e:
+        raise e
