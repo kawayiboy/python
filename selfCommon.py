@@ -290,6 +290,18 @@ def copy_file(src, dst):
     except Exception, e:
         raise e
 
+# src/test.txt --> D:\\dst
+def copy_file_with_dir(src, dst):
+    splitlocaldir = src.split('/')
+    splitlocaldir.remove(splitlocaldir[-1:][0])
+    localdir = dst
+    for item in splitlocaldir:
+        localdir += os.sep + item
+    print localdir
+    if not os.path.exists(localdir):
+        os.makedirs(localdir)
+    shutil.copy2(src, localdir)
+
 def get_all_files_under_dir(dirpath):
     csvfiles = []
     for root, dirs, files in os.walk(dirpath):
