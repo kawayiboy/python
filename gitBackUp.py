@@ -1,18 +1,22 @@
 import selfCommon
 import os
 from datetime import datetime
+import sys
 
 modified_str = 'modified:'
 newfile_str = 'new file:'
 paths = []
 outs, errs = selfCommon.exec_cmd("git status")
-rootdir = "C:\\Users\\telu\\Desktop\\powerflowaddin-fortest3\\pf_"+selfCommon.date_object
+rootdir = "C:\\Users\\telu\\Desktop\\powerflowaddin-fortest3\\"
+stash_name = raw_input("stash name:")
+rootdir+=stash_name.strip()
 if not os.path.exists(rootdir):
-	curdate = datetime.now()
-	rootdir+='_'+str(curdate.hour)+'_'+str(curdate.minute)
+	# curdate = datetime.now()
+	# rootdir+='_'+str(curdate.hour)+'_'+str(curdate.minute)
 	os.makedirs(rootdir)
 else:
-	os.makedirs(rootdir)
+	print rootdir+' exist!'
+	sys.exit(0)
 if(outs):
 	lines = outs.split('\n')
 	for line in lines:
