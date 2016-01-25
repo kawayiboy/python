@@ -202,6 +202,33 @@ def read_csv_column_to_tuplelist(content,columns):
     desired_cols = (tuple(row[col] for col in columns) for row in reader)
     return list(desired_cols)
 
+def read_csv(filename):
+    try:
+        reader = csv.reader(open(filename))
+        data_list = list(reader)
+        return data_list 
+    except Exception, e:
+        raise e
+
+def read_csv_column(filename, idx, format_type=None):
+    csvlist = read_csv(filename)
+    columnlist = []
+    listlen = len(csvlist)
+    if(csvlist and listlen>0 and idx>=0):
+        for i in xrange(listlen):
+            try:
+                obj = csvlist[i][idx]
+                if(format_type!=None):
+                    if(format_type=='int'):
+                        obj = int(obj)
+                    elif(format_type=='float'):
+                        obj = float(obj)
+                columnlist.append(obj)
+            except Exception, e:
+                print i
+                raise e
+    return columnlist
+
 def lastmonth_stockinfo_bycolumn(symbol,columnname):
     today = datetime.now()
     thismonth = today.month-1
@@ -355,6 +382,15 @@ def url_request(url, method='GET', encode_ascii=False, **kwargs):
         returntext = returntext.encode('ascii', 'ignore')
     return returntext
 
+def urllib_get(url):
+    user_agent = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.104 Safari/537.36'
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', user_agent)
+    req.add_header('Connection', 'keep-alive')
+    res = urllib2.urlopen(req)
+    html = res.read()
+    return html
+
 def print_utf8(text):
     s = unicode(text).decode('utf8')
     sys.stdout.write(s)
@@ -404,3 +440,83 @@ def load_json(filename):
     content = read_file_content(filename)
     json_map = json.loads(str(content))
     return json_map
+
+def get_stock_market(code):
+    checkcode=code[0]
+    stock_market = ''
+    if int(checkcode)<=4:
+        stock_market="sz"
+    elif int(checkcode)>=5:
+        stock_market="sh"
+    return stock_market
+
+def get_cn_stock_name_from_code(code):
+    if(len(code)!=6):
+        return None
+    stock_market = get_stock_market(code)
+    url = 'http://hq.sinajs.cn/list='+stock_market+code
+    req = urllib2.Request(url)
+    res = urllib2.urlopen(req)
+    html = res.read()
+    begIdx = html.find('=')
+    endIdx = html.find(',')
+    # print html[begIdx+2:endIdx].decode('gb2312')
+    return html[begIdx+2:endIdx].decode('gb2312')
+
+def jpush_push(msg,dev=False):
+    try:
+        sys.path.append('../jpush-api-python-client-3.0.2')
+        import jpush as jpush
+        # from examples.push.conf import app_key, master_secret
+        app_key = u'129df7dc599474e8a4dc1495'
+        master_secret = u'6c8411a96d5a04e37c11401d'
+        dev_app_key = u'5115e359060dbc792d5abc74'
+        dev_master_secret = u'1596e0fb1b06f2fafd2fb9ea'
+
+        if(dev):
+           app_key = dev_app_key
+           master_secret = dev_master_secret
+        _jpush = jpush.JPush(app_key, master_secret)
+        push = _jpush.create_push()
+        push.audience = jpush.all_
+        android_msg = jpush.android(alert=msg)
+
+        push.notification = jpush.notification(alert=msg, android=android_msg)
+        push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
+        push.platform = jpush.platform("android")
+        push.send()
+    except Exception, e:
+        print e
+
+def download_image(url,filename):
+    """
+    download a comic in the form of
+
+    url = http://www.example.com
+    filename = '00000000.jpg'
+    """
+    image=urllib.URLopener()
+    image.retrieve(url,filename)
+
+import pyautogui
+def auto_gui_on_image(image_name):
+    try:
+        buttonx, buttony = pyautogui.locateCenterOnScreen(image_name)
+        return (buttonx,buttony)
+    except Exception, e:
+        print e
+        return (None,None)
+
+def get_random_list(origlist,drawsize):
+    listsize = len(origlist)
+    
+    randidx = []
+    while(len(randidx)<drawsize):
+        r = randint(0,listsize-1)
+        if(r not in randidx):
+            randidx.append(r)
+    randlist = []
+    for i in range(len(randidx)):
+        randlist.append(origlist[randidx[i]])
+
+    return randlist
