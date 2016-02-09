@@ -20,6 +20,7 @@ import requests
 import codecs
 from subprocess import Popen, PIPE
 import subprocess
+from selenium import webdriver
 
 def get_tomorrow():
     today = datetime.now()
@@ -29,6 +30,14 @@ def get_tomorrow():
 def get_nextdate(anydate):
     nextdate = anydate + dt.timedelta(days=1)
     return nextdate
+
+def get_next_nth_date(anydate, daynum):
+    nextdate = anydate + dt.timedelta(days=daynum)
+    return nextdate
+
+def set_time(datestr):
+    dateval = datetime.strptime(datestr, '%d %b %Y')
+    return dateval
 
 def add_months(sourcedate,months):
     month = sourcedate.month - 1 + months
@@ -47,6 +56,22 @@ def get_current_datestr():
 	    monthformatstr = "0"
 	date_object = str(curdate.year)+'_'+monthformatstr+str(curdate.month)+'_'+formatstr+str(curdate.day)
 	return date_object
+
+def get_format_datestr(curdate, format='mm/dd/yyyy'):
+    formatstr = ""
+    date_object =""
+    if curdate.day < 10:
+        formatstr = "0"
+    monthformatstr = ""
+    if curdate.month<10:
+        monthformatstr = "0"
+    if(format=='mm/dd/yyyy'):
+        date_object = monthformatstr+str(curdate.month)+'/'+formatstr+str(curdate.day)+'/'+str(curdate.year)
+    elif(format=='yyyy-mm-dd'):
+        date_object = str(curdate.year)+'-'+monthformatstr+str(curdate.month)+'-'+formatstr+str(curdate.day)
+    elif(format=='yyyy_mm_dd'):
+        date_object = str(curdate.year)+'_'+monthformatstr+str(curdate.month)+'_'+formatstr+str(curdate.day)
+    return date_object
 
 def date_to_str(indate):
     formatstr = ""
@@ -520,3 +545,17 @@ def get_random_list(origlist,drawsize):
         randlist.append(origlist[randidx[i]])
 
     return randlist
+
+def selenium_visit_url(url):
+    driver = webdriver.Firefox()
+    driver.maximize_window()
+    driver.get(url)
+    return driver
+
+def wait_and_find(func, args):
+    time.sleep(2)
+    elems = func(*args)
+    while(len(elems)==0):
+        time.sleep(1)
+        elems = func(*args)
+    return elems
