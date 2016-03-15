@@ -21,6 +21,7 @@ import codecs
 from subprocess import Popen, PIPE
 import subprocess
 from selenium import webdriver
+import pickle
 
 def get_tomorrow():
     today = datetime.now()
@@ -361,6 +362,30 @@ def get_all_files_under_dir(dirpath):
             csvfiles.append(file)
     return csvfiles
 
+def get_all_files_under_dir_full_path(dirpath,relative = True):
+    csvfiles = []
+    for path, subdirs, files in os.walk(dirpath):
+        for file in files:
+            fullpath = ''
+            if(relative==True):
+                fullpath = os.path.join(path,file)
+            else:
+                # print path
+                paths = path.split('\\')[1:]
+                path = "\\".join(paths)
+                # print path
+                fullpath = os.path.join(os.getcwd(),os.path.join(path,file))
+            csvfiles.append(fullpath)
+    return csvfiles
+
+def get_all_files_under_dir_with_ext(dirpath, ext):
+    csvfiles = []
+    for root, dirs, files in os.walk(dirpath):
+        for file in files:
+            if file.endswith("."+ext):
+                csvfiles.append(file)
+    return csvfiles
+
 def list_allfiles(dirpath):
     csvfiles = []
     for item in os.listdir(dirpath):
@@ -551,6 +576,24 @@ def selenium_visit_url(url):
     driver.maximize_window()
     driver.get(url)
     return driver
+
+def login_save_cookie(url,username_id, pwd_id, username, pwd, submit_id, cookie_filename):
+    driver = selenium_visit_url(url)
+
+    time.sleep(1)
+
+    username_input = driver.find_element_by_id(username_id)
+    username_input.send_keys(username)
+
+    pwd_input = driver.find_element_by_id(pwd_id)
+    pwd_input.send_keys(pwd)
+
+    submit = driver.find_element_by_id(submit_id)
+    submit.click()
+
+    time.sleep(5)
+    pickle.dump(driver.get_cookies() , open(cookie_filename,"wb"))
+    driver.close()
 
 def wait_and_find(func, args):
     time.sleep(2)
