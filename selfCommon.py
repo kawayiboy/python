@@ -602,3 +602,17 @@ def wait_and_find(func, args):
         time.sleep(1)
         elems = func(*args)
     return elems
+
+def get_struct_time(timestr):
+    return time.strptime(timestr,'%H:%M:%S')
+
+def wait_until(struct_time):
+    try:
+        # sleep until 2AM
+        t = datetime.today()
+        future = datetime(t.year,t.month,t.day,struct_time.hour,struct_time.minute,struct_time.second)
+        if t.hour >= struct_time.hour:
+            future += dt.timedelta(days=1)
+        time.sleep((future-t).seconds)
+    except Exception, e:
+        raise e
