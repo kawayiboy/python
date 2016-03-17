@@ -12,7 +12,7 @@ import pickle
 from BeautifulSoup import BeautifulSoup
 sys.path.append('../thread/taskqueue/')
 import taskqueue
-from time import time, sleep
+# from time import time, sleep
 from datetime import datetime
 
 search_txts = ['Justin Bieber','Katy Perry']
@@ -67,14 +67,14 @@ def login_save_cookie():
 	global username, pwd
 	url = 'http://www.bing.com/'
 	driver = selfCommon.selenium_visit_url(url)
-	submit = driver.find_element_by_id('id_s')
+	submit = selfCommon.wait_and_find(find_elem_id,[driver,'id_s'])[0]
 	submit.click()
 
-	time.sleep(1)
+	time.sleep(3)
 
 	submit = driver.find_element_by_class_name('id_name')
 	submit.click()
-	
+
 	elems = selfCommon.wait_and_find(find_login,[driver])
 	elems[0].send_keys(username)
 
@@ -123,15 +123,16 @@ def click_images():
 		bing_click_task_queue(lilen)
 
 if __name__ == '__main__':
-	# login_save_cookie()
+	if(not os.path.exists('cookies.pkl')):
+		login_save_cookie()
 	# for txt in search_txts:
 	# 	selenium_bing(txt)
-
-	if(len(sys.argv)>1):
-		timestr = sys.argv[1]
-		print timestr
-		struct_time = datetime.strptime(timestr, '%H:%M:%S')
-		selfCommon.wait_until(struct_time)
-		click_images()
 	else:
-		click_images()
+		if(len(sys.argv)>1):
+			timestr = sys.argv[1]
+			print timestr
+			struct_time = datetime.strptime(timestr, '%H:%M:%S')
+			selfCommon.wait_until(struct_time)
+			click_images()
+		else:
+			click_images()
