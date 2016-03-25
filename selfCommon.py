@@ -378,12 +378,15 @@ def get_all_files_under_dir_full_path(dirpath,relative = True):
             csvfiles.append(fullpath)
     return csvfiles
 
-def get_all_files_under_dir_with_ext(dirpath, ext):
+def get_all_files_under_dir_with_ext(dirpath, ext, filename_only=False):
     csvfiles = []
     for root, dirs, files in os.walk(dirpath):
         for file in files:
             if file.endswith("."+ext):
-                csvfiles.append(file)
+                if(filename_only):
+                    csvfiles.append(file)
+                else:
+                    csvfiles.append(os.path.join(root,file))
     return csvfiles
 
 def list_allfiles(dirpath):
