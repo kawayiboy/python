@@ -580,7 +580,7 @@ def selenium_visit_url(url):
     driver.get(url)
     return driver
 
-def login_save_cookie(url,username_id, pwd_id, username, pwd, submit_id, cookie_filename):
+def login_save_cookie(driver,url,username_id, pwd_id, username, pwd, submit_id, cookie_filename):
     driver = selenium_visit_url(url)
 
     time.sleep(1)
@@ -597,6 +597,22 @@ def login_save_cookie(url,username_id, pwd_id, username, pwd, submit_id, cookie_
     time.sleep(5)
     pickle.dump(driver.get_cookies() , open(cookie_filename,"wb"))
     driver.close()
+
+def switch_to_next_window_and_close(driver,next_win=True):
+    win_handle = None
+    current_handle = driver.current_window_handle
+    if(next_win):
+        window_after = driver.window_handles[1]
+        print window_after
+        win_handle = window_after
+    else:
+        window_before = driver.window_handles[0]
+        print window_before
+        win_handle = window_before
+
+    driver.switch_to_window(win_handle)
+    driver.close()
+    driver.switch_to_window(current_handle)
 
 def wait_and_find(func, args):
     time.sleep(2)

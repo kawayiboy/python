@@ -1,10 +1,24 @@
 import wx
 import wx.lib.masked as masked
 # import datetime
-from datetime import datetime
+from datetime import datetime, date
 import sys
 sys.path.append('../')
 import selfCommon
+
+def pydate2wxdate(date):
+     assert isinstance(date, (datetime, date))
+     tt = date.timetuple()
+     dmy = (tt[2], tt[1]-1, tt[0])
+     return wx.DateTimeFromDMY(*dmy)
+ 
+def wxdate2pydate(wxdate):
+     assert isinstance(wxdate, wx.DateTime)
+     if wxdate.IsValid():
+          ymd = map(int, wxdate.FormatISODate().split('-'))
+          return date(*ymd)
+     else:
+          return None
 
 ########################################################################
 class TimeCtrlPanel(wx.Panel):
@@ -15,6 +29,7 @@ class TimeCtrlPanel(wx.Panel):
         """Constructor"""
         wx.Panel.__init__(self, parent)
         self.parent = parent
+        self.timepickers = []
 
         self.mainSizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -42,10 +57,23 @@ class TimeCtrlPanel(wx.Panel):
                                 )
         self.addWidgets([text3, self.spinless_ctrl])
 
+
         saveButton = wx.Button(self, label='Save')
         saveButton.Bind(wx.EVT_BUTTON, self.OnSave)
         self.addWidgets([saveButton])
 
+        self.text_input = wx.TextCtrl( self, -1, value="event")
+        self.addWidgets([self.text_input])
+        self.date_picker = self.get_date_picker()
+        self.addWidgets([self.date_picker])
+
+        self.add_time_picker('start')
+        self.add_time_picker('end')
+
+
+        addEventButton = wx.Button(self, label='AddEvent')
+        addEventButton.Bind(wx.EVT_BUTTON, self.OnAddEvent)
+        self.addWidgets([addEventButton])
 
         self.SetSizer(self.mainSizer)
 
@@ -58,6 +86,42 @@ class TimeCtrlPanel(wx.Panel):
         # self.Close()
         self.call_program()
         self.parent.Destroy()
+
+    def OnAddEvent(self, evt):
+        print self.date_picker.GetValue(), self.timepickers[0].GetValue(),self.timepickers[1].GetValue(),self.text_input.GetValue()
+        eventstr = self.text_input.GetValue()
+        dateobj = self.date_picker.GetValue()
+        datetimeobj = wxdate2pydate(dateobj)
+        datestr = selfCommon.get_format_datestr(datetimeobj,'yyyy-mm-dd')
+        outs, errs = selfCommon.exec_cmd(['python','../../google-api-python-client-1.3.1/google_cal_test.py',
+            datestr,self.timepickers[0].GetValue(),self.timepickers[1].GetValue(),eventstr])
+        print outs
+        self.parent.Destroy()
+
+    def OnDateChanged(self, evt):
+        print("OnDateChanged: %s\n" % evt.GetDate())
+
+    def get_date_picker(self):
+        timestr = datetime.strftime(datetime.now(), '%d/%m/%y')
+        dpc = wx.DatePickerCtrl(self, size=(120,-1),
+                                style = wx.DP_DROPDOWN
+                                      | wx.DP_SHOWCENTURY
+                                      | wx.DP_ALLOWNONE )
+        invaliddt = pydate2wxdate(datetime.now())
+        dpc.SetValue(invaliddt)
+        self.Bind(wx.EVT_DATE_CHANGED, self.OnDateChanged, dpc)
+        return dpc
+
+    def add_time_picker(self,title):
+        timestr = datetime.strftime(datetime.now(), '%H:%M:%S')
+        text2 = wx.StaticText( self, -1, title)
+        tp = masked.TimeCtrl(
+                        self, -1, value = timestr, name="24 hour control", fmt24hr=True)
+        spin2 = wx.SpinButton( self, -1, wx.DefaultPosition, (-1,tp.GetSize().height), wx.SP_VERTICAL )
+        tp.BindSpinButton( spin2 )
+        self.timepickers.append(tp)
+
+        self.addWidgets([text2, tp, spin2])
 
     #----------------------------------------------------------------------
     def addWidgets(self, widgets):
