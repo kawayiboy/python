@@ -1,0 +1,17 @@
+[
+    {
+        "id": "view",
+        "children": [
+            {
+                "caption": "Example",
+                "children": [
+                    {
+                        "caption": "Example",
+                        "id": "Example",
+                        "command": "example"
+                    }
+                ]
+            }
+        ]
+    }
+]
