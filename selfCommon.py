@@ -598,6 +598,17 @@ def login_save_cookie(driver,url,username_id, pwd_id, username, pwd, submit_id, 
     pickle.dump(driver.get_cookies() , open(cookie_filename,"wb"))
     driver.close()
 
+def selenium_visit_with_cookie(url, cookie_filename):
+    driver = selenium_visit_url(url)
+    cookies = pickle.load(open(cookie_filename, "rb"))
+    for cookie in cookies:
+        driver.add_cookie(cookie)
+    driver.get(url)
+    return driver
+
+def get_source_from_selenium(driver):
+    return driver.execute_script("return document.documentElement.outerHTML;").encode("utf-8")
+
 def switch_to_next_window_and_close(driver,next_win=True):
     win_handle = None
     current_handle = driver.current_window_handle
@@ -635,3 +646,16 @@ def wait_until(struct_time):
         time.sleep((future-t).seconds)
     except Exception, e:
         raise e
+
+# def get_env_var(key):
+#     try:  
+#        return os.environ[str(key)]
+#     except KeyError: 
+#        print "Please set the environment variable " + str(key)
+
+# def set_env_var(key,value):
+#     try:
+#         os.environ[str(key)] = str(value)
+#     except Exception, e:
+#         print e
+#         raise e
