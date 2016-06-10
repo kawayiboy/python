@@ -74,6 +74,16 @@ def get_format_datestr(curdate, format='mm/dd/yyyy'):
         date_object = str(curdate.year)+'_'+monthformatstr+str(curdate.month)+'_'+formatstr+str(curdate.day)
     return date_object
 
+def format_datestr_to_date(datestr, format='mm/dd/yyyy'):
+    date_object = None
+    if(format=='mm/dd/yyyy'):
+        date_object = datetime.strptime(datestr, '%d/%m/%Y')
+    elif(format=='yyyy-mm-dd'):
+        date_object = datetime.strptime(datestr, '%Y-%m-%d')
+    elif(format=='yyyy_mm_dd'):
+        date_object = datetime.strptime(datestr, '%Y_%m_%d')
+    return date_object
+
 def date_to_str(indate):
     formatstr = ""
     if indate.day < 10:
@@ -340,6 +350,18 @@ def copyanything(src, dst):
 def copy_file(src, dst):
     try:
         shutil.copy2(src, dst)
+    except Exception, e:
+        raise e
+
+def remove_file(filename):
+    try:
+        os.remove(filename)
+    except Exception, e:
+        raise e
+
+def rename_file(src, dst):
+    try:
+        os.rename(src, dst)
     except Exception, e:
         raise e
 
