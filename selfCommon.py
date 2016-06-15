@@ -22,6 +22,7 @@ from subprocess import Popen, PIPE
 import subprocess
 from selenium import webdriver
 import pickle
+import re
 
 def get_tomorrow():
     today = datetime.now()
@@ -129,6 +130,11 @@ def get_first_n_line(filename,n):
         head = [next(myfile) for x in xrange(n)]
     return head
 
+def get_line_count(filename):
+    line_count = 0
+    with open(filename) as f:
+        line_count = len(f.readlines())
+    return line_count
 
 def get_last_row(reader):
     return deque(reader, 1)[0]
@@ -584,7 +590,7 @@ def auto_gui_on_image(image_name):
 
 def get_random_list(origlist,drawsize):
     listsize = len(origlist)
-    
+
     randidx = []
     while(len(randidx)<drawsize):
         r = randint(0,listsize-1)
@@ -669,10 +675,35 @@ def wait_until(struct_time):
     except Exception, e:
         raise e
 
+def firstLetterCase(word, upper = True):
+    list1 = list(word)
+    if(upper):
+        list1[0] = list1[0].upper()
+    else:
+        list1[0] = list1[0].lower()
+    word = ''.join(list1)
+    return word
+
+def CamelCaseToWords(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1 \2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1 \2', s1)
+
+def CamelCaseTosnake_case(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1)
+
+def value_list(x):
+    if isinstance(x, dict):
+        return list(set(x.values()))
+    elif isinstance(x, basestring):
+        return [x]
+    else:
+        return None
+
 # def get_env_var(key):
-#     try:  
+#     try:
 #        return os.environ[str(key)]
-#     except KeyError: 
+#     except KeyError:
 #        print "Please set the environment variable " + str(key)
 
 # def set_env_var(key,value):
