@@ -1,4 +1,5 @@
-[{
+{
+  "data": [{
     "drawing_date": "2022-12-12T00:00:00",
     "winning_number": "16 31 50 55 61 09",
     "multiplier": "4"
@@ -372,4 +373,4 @@
     "drawing_date": "2023-06-03T00:00:00",
     "winning_number": "15 45 64 67 68 18",
     "multiplier": "2"
-}]
+}]}
